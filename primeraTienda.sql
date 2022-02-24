@@ -43,6 +43,7 @@ CREATE TABLE tienda.ORDEN_COMPRA (
 CREATE TABLE tienda.PRODUCTOS_COMPRA (
 	id_orden INT NOT NULL PRIMARY KEY,
 	id_producto INT NOT NULL,
+	-- 1 preparacion 2 enviado 3 recibido 4 cancelado
 	estado_producto INT NOT NULL,
 	CONSTRAINT "id_orden" FOREIGN KEY ("id_orden")
 		REFERENCES tienda.ORDEN_COMPRA("id_orden"),
@@ -50,33 +51,54 @@ CREATE TABLE tienda.PRODUCTOS_COMPRA (
 		REFERENCES tienda.producto("id_producto")
 );
 
+-- usuarios
 INSERT into tienda.usuario VALUES (500,'CC',false,'BRIAN',588485, 'brian@gmail','carrera 71', 'CHIA', 'ADMIN');
-INSERT into tienda.orden_compra VALUES (12,'call 48 sur', FALSE, 700, 500);
+INSERT into tienda.usuario VALUES (600,'CC',false,'Jósteinn',588485, 'bifrost@gmail','carrera 9', 'USAQUÉN', 'mjolnir333');
+INSERT into tienda.usuario VALUES (700,'CC',false,'Vasant',588485, 'vava@gmail','carrera 43', 'SUBA', 'pepita47');
+INSERT into tienda.usuario VALUES (800,'CC',false,'Ada',588485, 'lovelace@protonmail','autonorte', 'ENGATIVA', '#X@Un1c0d3@X#');
+INSERT into tienda.usuario VALUES (900,'CC',false,'Emilia',588485, 'emily@outlook','el dorado', 'FONTIBÓN', 'emi');
+-- productos
+INSERT INTO tienda.producto VALUES (10, 'mouse negro genius', 'periféricos', 'genius', 'mouse chimba negro genius usado', 300)
+INSERT INTO tienda.producto VALUES (20, 'mouse rosa genius', 'periféricos', 'genius', 'mouse chimba rosa genius usado', 300)
+INSERT INTO tienda.producto VALUES (30, 'mouse azul genius', 'periféricos', 'genius', 'mouse chimba azul genius usado', 300)
+INSERT INTO tienda.producto VALUES (40, 'teclado negro genius', 'periféricos', 'genius', 'teclado chimba negro genius usado', 300)
+INSERT INTO tienda.producto VALUES (50, 'teclado negro logitech', 'periféricos', 'logitech', 'teclado chimba negro logitech nuevo', 300)
+INSERT INTO tienda.producto VALUES (60, 'cable negro logitech', 'periféricos', 'logitech', 'cable chimba logitech nuevo', 300)
+INSERT INTO tienda.producto VALUES (70, 'java 8 in action', 'libros', 'oreilly', 'libro streams y lambdas java 8', 50)
+INSERT INTO tienda.producto VALUES (80, 'learning python', 'libros', 'oreilly', 'libro programación básica en python', 50)
+INSERT INTO tienda.producto VALUES (90, 'cobol estructurado', 'libros', 'mc grawhill', 'libro sistemas administrativos y sintaxis cobol', 70)
+
+-- compras + productos compra
+INSERT into tienda.orden_compra VALUES (20,'call 48 sur', FALSE, 300, 500); -- brian compra 10
+	INSERT into tienda.productos_compra VALUES (20, 10, 1);
+INSERT into tienda.orden_compra VALUES (21,'carrera 9', FALSE, 600, 600); -- josteinn compra 30 y 50
+	INSERT into tienda.productos_compra VALUES (21, 30, 3);
+	INSERT into tienda.productos_compra VALUES (21, 50, 3);
+INSERT into tienda.orden_compra VALUES (22,'call 48 sur', FALSE, 300, 700); -- vasant compra 60
+	INSERT into tienda.productos_compra VALUES (22, 60, 4);
+INSERT into tienda.orden_compra VALUES (23,'call 48 sur', FALSE, 470, 800); -- ada compra 40, 70, 80 y 90
+	INSERT into tienda.productos_compra VALUES (23, 40, 2);
+	INSERT into tienda.productos_compra VALUES (23, 70, 3);
+	INSERT into tienda.productos_compra VALUES (23, 80, 3);
+	INSERT into tienda.productos_compra VALUES (23, 90, 3);
 
 
--- vistas (min. 2)
--- indices (min. 3, adicional a los PK)
-
--- +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
--- vista #1 - Productos
--- justificacion: un comprador solo deberia ver los productos y su historial
-
-CREATE MATERIALIZED VIEW tienda.comprador_productos as 
+/* Vista 1 - Productos
+Seguridad. Un comprador solo deberia ver los productos y su historial */
+CREATE MATERIALIZED VIEW tienda.comprador_productos AS 
 SELECT Id_producto id,
 	Categoria_producto cat,
 	Marca_producto mar,
-	Descripcion_producto desc,
+	Descripcion_producto des,
 	Precio_producto pre
 FROM tienda.Producto
 
-select * from tienda.comprador_productos;
--- +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+SELECT * FROM tienda.comprador_productos;
 
--- +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
--- vista #2 - Historial
--- justificacion: un comprador solo deberia ver los productos y su historial
-/*Realice la eliminacion por ejemplo*/
-drop MATERIALIZED VIEW  IF EXISTS tienda.comprador_historial;
+/* Vista 2 - Historial
+Seguridad. Un comprador solo debería ver los productos y su historial
+-> Realice la eliminacion, por ejemplo */
+DROP MATERIALIZED VIEW  IF EXISTS tienda.comprador_historial;
 CREATE MATERIALIZED VIEW  tienda.comprador_historial AS
 SELECT
 	id_orden id,
@@ -87,11 +109,9 @@ SELECT
 FROM  tienda.orden_compra;
 
 SELECT * FROM  tienda.comprador_historial;
--- +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
--- +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
--- vista #3 - Productos Orden
--- justificacion: un comprador solo deberia ver los productos y su historial
+/* Vista 3 - Productos Orden
+Seguridad. Un comprador solo debería ver los productos y su historial */
 CREATE MATERIALIZED VIEW  tienda.comprador_historial_producto AS
 SELECT
 	ord_c.id_orden,
@@ -105,11 +125,10 @@ JOIN tienda.productos_compra prod_compra ON prod_compra.id_orden = ord_c.id_orde
 JOIN tienda.producto prod ON prod.id_producto = prod_compra.id_producto;
 
 SELECT * FROM tienda.comprador_historial_producto;
--- +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
--- +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
--- vista #4 - Proveedor
--- justificacion: un comprador solo deberia ver los productos y ser capaz de modificarlos, por ende debe ver el stock.
+/* Vista 4 - Proveedor
+Un comprador solo deberia ver los productos y ser capaz de modificarlos, 
+por ende debe ver el stock */
 CREATE MATERIALIZED VIEW tienda.proveedor_producto AS
 SELECT
 	Id_producto,
@@ -119,22 +138,27 @@ SELECT
 	Precio_producto prec,
 	stock
 FROM tienda.producto;
--- +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
--- +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
--- indice #1 - Filtro por categoria
--- justificacion: Para realizar la validacion (Si el producto pertenece o no a una categoria) para filtrar productos por categoria solo es necesario saber la categoria.
+/* Índices de las PK */
+/* Índice #1.1 - Número de identificación del usuario */
+CREATE INDEX id_usuarios ON tienda.usuario(numero_identificacion);
+
+/* Índice #1.2 - Número de identificación del producto */
+CREATE INDEX id_productos ON tienda.producto(id_producto);
+
+/* Índice #1.3 - Número de identificación de la órden */
+CREATE INDEX id_ordenes ON tienda.orden_compra(id_orden);
+
+/* Índices adicionales */
+/* Índice #2.1 - Filtro por categoria
+Para realizar la validacion (Si el producto pertenece o no a una categoria) para 
+filtrar productos por categoria solo es necesario saber la categoria. */
 CREATE INDEX productos_categoria ON tienda.producto(categoria_producto);
--- +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
--- +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
--- indice #2 - Filtro por 
--- justificacion: Para realizar la validacion (Si el producto pertenece o no a una categoria) para filtrar productos por categoria solo es necesario saber la categoria.
+/* Índice #2.2 - Filtro por marca
+Para realizar la validacion (Si el producto pertenece o no a una categoria) para filtrar productos por categoria solo es necesario saber la categoria. */
 CREATE INDEX productos_marca ON tienda.producto (marca_producto);
--- +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
--- +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
--- indice #3 - Ordenes
--- justificacion: TODO: Cambiar esto !!
+/* Índice #2.3 - Ordenes
+Para facilitar la visualización de órdenes en el historial */
 CREATE INDEX indice_comprador_historial ON tienda.orden_compra (id_orden);
--- +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
