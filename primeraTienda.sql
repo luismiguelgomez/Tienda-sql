@@ -58,29 +58,25 @@ INSERT into tienda.usuario VALUES (700,'CC',false,'Vasant',588485, 'vava@gmail',
 INSERT into tienda.usuario VALUES (800,'CC',false,'Ada',588485, 'lovelace@protonmail','autonorte', 'ENGATIVA', '#X@Un1c0d3@X#');
 INSERT into tienda.usuario VALUES (900,'CC',false,'Emilia',588485, 'emily@outlook','el dorado', 'FONTIBÓN', 'emi');
 -- productos
-INSERT INTO tienda.producto VALUES (10, 'mouse negro genius', 'periféricos', 'genius', 'mouse chimba negro genius usado', 300)
-INSERT INTO tienda.producto VALUES (20, 'mouse rosa genius', 'periféricos', 'genius', 'mouse chimba rosa genius usado', 300)
-INSERT INTO tienda.producto VALUES (30, 'mouse azul genius', 'periféricos', 'genius', 'mouse chimba azul genius usado', 300)
-INSERT INTO tienda.producto VALUES (40, 'teclado negro genius', 'periféricos', 'genius', 'teclado chimba negro genius usado', 300)
-INSERT INTO tienda.producto VALUES (50, 'teclado negro logitech', 'periféricos', 'logitech', 'teclado chimba negro logitech nuevo', 300)
-INSERT INTO tienda.producto VALUES (60, 'cable negro logitech', 'periféricos', 'logitech', 'cable chimba logitech nuevo', 300)
-INSERT INTO tienda.producto VALUES (70, 'java 8 in action', 'libros', 'oreilly', 'libro streams y lambdas java 8', 50)
-INSERT INTO tienda.producto VALUES (80, 'learning python', 'libros', 'oreilly', 'libro programación básica en python', 50)
-INSERT INTO tienda.producto VALUES (90, 'cobol estructurado', 'libros', 'mc grawhill', 'libro sistemas administrativos y sintaxis cobol', 70)
+INSERT INTO tienda.producto VALUES (10, 'mouse negro genius', 'periféricos', 'genius', 'mouse chimba negro genius usado', 300, 1000);
+INSERT INTO tienda.producto VALUES (20, 'mouse rosa genius', 'periféricos', 'genius', 'mouse chimba rosa genius usado', 300, 1050);
+INSERT INTO tienda.producto VALUES (30, 'mouse azul genius', 'periféricos', 'genius', 'mouse chimba azul genius usado', 300, 5);
+INSERT INTO tienda.producto VALUES (40, 'teclado negro genius', 'periféricos', 'genius', 'teclado chimba negro genius usado', 300,88);
+INSERT INTO tienda.producto VALUES (50, 'teclado negro logitech', 'periféricos', 'logitech', 'teclado chimba negro logitech nuevo', 300,89);
+INSERT INTO tienda.producto VALUES (60, 'cable negro logitech', 'periféricos', 'logitech', 'cable chimba logitech nuevo', 300,0);
+INSERT INTO tienda.producto VALUES (70, 'java 8 in action', 'libros', 'oreilly', 'libro streams y lambdas java 8', 50,1);
+INSERT INTO tienda.producto VALUES (80, 'learning python', 'libros', 'oreilly', 'libro programación básica en python', 50,5);
+INSERT INTO tienda.producto VALUES (90, 'cobol estructurado', 'libros', 'mc grawhill', 'libro sistemas administrativos y sintaxis cobol', 70,90);
 
 -- compras + productos compra
 INSERT into tienda.orden_compra VALUES (20,'call 48 sur', FALSE, 300, 500); -- brian compra 10
 	INSERT into tienda.productos_compra VALUES (20, 10, 1);
 INSERT into tienda.orden_compra VALUES (21,'carrera 9', FALSE, 600, 600); -- josteinn compra 30 y 50
 	INSERT into tienda.productos_compra VALUES (21, 30, 3);
-	INSERT into tienda.productos_compra VALUES (21, 50, 3);
 INSERT into tienda.orden_compra VALUES (22,'call 48 sur', FALSE, 300, 700); -- vasant compra 60
 	INSERT into tienda.productos_compra VALUES (22, 60, 4);
 INSERT into tienda.orden_compra VALUES (23,'call 48 sur', FALSE, 470, 800); -- ada compra 40, 70, 80 y 90
 	INSERT into tienda.productos_compra VALUES (23, 40, 2);
-	INSERT into tienda.productos_compra VALUES (23, 70, 3);
-	INSERT into tienda.productos_compra VALUES (23, 80, 3);
-	INSERT into tienda.productos_compra VALUES (23, 90, 3);
 
 
 /* Vista 1 - Productos
@@ -91,24 +87,22 @@ SELECT Id_producto id,
 	Marca_producto mar,
 	Descripcion_producto des,
 	Precio_producto pre
-FROM tienda.Producto
+FROM tienda.Producto;
 
 SELECT * FROM tienda.comprador_productos;
 
 /* Vista 2 - Historial
 Seguridad. Un comprador solo debería ver los productos y su historial
 -> Realice la eliminacion, por ejemplo */
-DROP MATERIALIZED VIEW  IF EXISTS tienda.comprador_historial;
-CREATE MATERIALIZED VIEW  tienda.comprador_historial AS
+CREATE MATERIALIZED VIEW tienda.comprador_historial AS
 SELECT
 	id_orden id,
 	Direccion_envio dir,
 	Tipo_envio tipo,
 	Valor_compra val,
 	numero_identificacion num
-FROM  tienda.orden_compra;
+FROM tienda.orden_compra;
 
-SELECT * FROM  tienda.comprador_historial;
 
 /* Vista 3 - Productos Orden
 Seguridad. Un comprador solo debería ver los productos y su historial */
@@ -162,3 +156,5 @@ CREATE INDEX productos_marca ON tienda.producto (marca_producto);
 /* Índice #2.3 - Ordenes
 Para facilitar la visualización de órdenes en el historial */
 CREATE INDEX indice_comprador_historial ON tienda.orden_compra (id_orden);
+
+SELECT * FROM  tienda.comprador_historial;
