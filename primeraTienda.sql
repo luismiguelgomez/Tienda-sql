@@ -1,3 +1,88 @@
+CREATE SCHEMA tienda; 
+CREATE TABLE tienda.ADMINISTADOR (
+	nombre VARCHAR(100) NOT NULL PRIMARY KEY,
+	telefono VARCHAR(20) NOT NULL,
+	email VARCHAR(100) NOT NULL,
+	contrasenia VARCHAR(100) NOT NULL
+);
+
+CREATE TYPE tienda.enum_tipo_identificacion AS ENUM ('CC','CE', 'NIT');
+
+CREATE TABLE tienda.USUARIO (
+	numero_identificacion INT NOT NULL PRIMARY KEY,
+	enum_tipo_identificacion tienda.enum_tipo_identificacion,
+	proveedor boolean NOT NULL,
+	nombre VARCHAR(100) NOT NULL,
+	telefono VARCHAR(20) NOT NULL,
+	email VARCHAR(100) NOT NULL,
+	direccion VARCHAR(100) NOT NULL,
+	ciudad VARCHAR(100) NOT NULL,
+	contrasenia VARCHAR(100) NOT NULL
+);
+
+CREATE TABLE tienda.PRODUCTO (
+	id_producto INT NOT NULL PRIMARY KEY,
+	titulo_producto VARCHAR(100) UNIQUE NOT NULL,
+	categoria_producto VARCHAR(100) NOT NULL,
+	marca_producto VARCHAR(100) NOT NULL,
+	descripcion_producto VARCHAR(500) NOT NULL,
+	precio_producto int NOT NULL,
+	stock int not null
+);
+
+CREATE TABLE tienda.ORDEN_COMPRA (
+	id_orden INT NOT NULL PRIMARY KEY,
+	direccion_envio VARCHAR(250) NOT NULL,
+	tipo_envio boolean NOT NULL,
+	valor_compra int NOT NULL,
+	numero_identificacion int NOT NULL,
+	CONSTRAINT "id_orden" FOREIGN KEY ("numero_identificacion")
+		REFERENCES tienda.usuario("numero_identificacion")
+);
+
+CREATE TABLE tienda.PRODUCTOS_COMPRA (
+	id_orden INT NOT NULL PRIMARY KEY,
+	id_producto INT NOT NULL,
+	-- 1 preparacion 2 enviado 3 recibido 4 cancelado
+	estado_producto INT NOT NULL,
+	CONSTRAINT "id_orden" FOREIGN KEY ("id_orden")
+		REFERENCES tienda.ORDEN_COMPRA("id_orden"),
+	CONSTRAINT "id_producto" FOREIGN KEY ("id_producto")
+		REFERENCES tienda.producto("id_producto")
+);
+
+-- usuarios
+INSERT into tienda.usuario VALUES (500,'CC',false,'BRIAN',588485, 'brian@gmail','carrera 71', 'CHIA', 'ADMIN');
+INSERT into tienda.usuario VALUES (600,'CC',false,'Jósteinn',588485, 'bifrost@gmail','carrera 9', 'USAQUÉN', 'mjolnir333');
+INSERT into tienda.usuario VALUES (700,'CC',false,'Vasant',588485, 'vava@gmail','carrera 43', 'SUBA', 'pepita47');
+INSERT into tienda.usuario VALUES (800,'CC',false,'Ada',588485, 'lovelace@protonmail','autonorte', 'ENGATIVA', '#X@Un1c0d3@X#');
+INSERT into tienda.usuario VALUES (900,'CC',false,'Emilia',588485, 'emily@outlook','el dorado', 'FONTIBÓN', 'emi');
+-- productos
+INSERT INTO tienda.producto VALUES (10, 'mouse negro genius', 'periféricos', 'genius', 'mouse chimba negro genius usado', 300)
+INSERT INTO tienda.producto VALUES (20, 'mouse rosa genius', 'periféricos', 'genius', 'mouse chimba rosa genius usado', 300)
+INSERT INTO tienda.producto VALUES (30, 'mouse azul genius', 'periféricos', 'genius', 'mouse chimba azul genius usado', 300)
+INSERT INTO tienda.producto VALUES (40, 'teclado negro genius', 'periféricos', 'genius', 'teclado chimba negro genius usado', 300)
+INSERT INTO tienda.producto VALUES (50, 'teclado negro logitech', 'periféricos', 'logitech', 'teclado chimba negro logitech nuevo', 300)
+INSERT INTO tienda.producto VALUES (60, 'cable negro logitech', 'periféricos', 'logitech', 'cable chimba logitech nuevo', 300)
+INSERT INTO tienda.producto VALUES (70, 'java 8 in action', 'libros', 'oreilly', 'libro streams y lambdas java 8', 50)
+INSERT INTO tienda.producto VALUES (80, 'learning python', 'libros', 'oreilly', 'libro programación básica en python', 50)
+INSERT INTO tienda.producto VALUES (90, 'cobol estructurado', 'libros', 'mc grawhill', 'libro sistemas administrativos y sintaxis cobol', 70)
+
+-- compras + productos compra
+INSERT into tienda.orden_compra VALUES (20,'call 48 sur', FALSE, 300, 500); -- brian compra 10
+	INSERT into tienda.productos_compra VALUES (20, 10, 1);
+INSERT into tienda.orden_compra VALUES (21,'carrera 9', FALSE, 600, 600); -- josteinn compra 30 y 50
+	INSERT into tienda.productos_compra VALUES (21, 30, 3);
+	INSERT into tienda.productos_compra VALUES (21, 50, 3);
+INSERT into tienda.orden_compra VALUES (22,'call 48 sur', FALSE, 300, 700); -- vasant compra 60
+	INSERT into tienda.productos_compra VALUES (22, 60, 4);
+INSERT into tienda.orden_compra VALUES (23,'call 48 sur', FALSE, 470, 800); -- ada compra 40, 70, 80 y 90
+	INSERT into tienda.productos_compra VALUES (23, 40, 2);
+	INSERT into tienda.productos_compra VALUES (23, 70, 3);
+	INSERT into tienda.productos_compra VALUES (23, 80, 3);
+	INSERT into tienda.productos_compra VALUES (23, 90, 3);
+
+
 /* Vista 1 - Productos
 Seguridad. Un comprador solo deberia ver los productos y su historial */
 CREATE MATERIALIZED VIEW tienda.comprador_productos AS 
