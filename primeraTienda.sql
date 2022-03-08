@@ -6,7 +6,6 @@ CREATE TYPE tienda.enum_tipo_evento AS ENUM ('CREATE', 'UPDATE', 'DELETE');
 CREATE TYPE tienda.enum_score_desc AS ENUM ('LOW', 'LOW-MID', 'MID', 'MID-HIGH', 'HIGH');
 CREATE TYPE tienda.enum_tipo_pago AS ENUM ('Debito', 'Credito', 'PSE');
 
-/* TODO: Double-check FKs, PKs and fix any bugs */
 /* TODO: Double-check if References/Relations are correctly handled */
 /* TODO: Create insertions (Maybe not from scratch) */
 
@@ -25,7 +24,9 @@ CREATE TABLE tienda.CUSTOMER (
 CREATE TABLE tienda.SHOPPING_CART (
 	Cart_id INT NOT NULL PRIMARY KEY,
 	Creation_date TIMESTAMP NOT NULL,
-	Customer_id INT NOT NULL
+	Customer_id INT NOT NULL,
+	CONSTRAINT "Customer_id" FOREIGN KEY ("Customer_id")
+		REFERENCES tienda.CUSTOMER("Customer_id")
 );
 
 CREATE TABLE tienda.ORDEN_COMPRA (
@@ -35,7 +36,7 @@ CREATE TABLE tienda.ORDEN_COMPRA (
 	Valor_compra INT NOT NULL,
 	Customer_id INT NOT NULL,
 	CONSTRAINT "Customer_id" FOREIGN KEY ("Customer_id")
-		REFERENCES tienda.usuario("Cusomer_id")
+		REFERENCES tienda.CUSTOMER("Customer_id")
 );
 
 CREATE TABLE tienda.ADMINISTATOR (
