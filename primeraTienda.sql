@@ -1,87 +1,191 @@
-CREATE SCHEMA tienda; 
-CREATE TABLE tienda.ADMINISTADOR (
-	nombre VARCHAR(100) NOT NULL PRIMARY KEY,
-	telefono VARCHAR(20) NOT NULL,
-	email VARCHAR(100) NOT NULL,
-	contrasenia VARCHAR(100) NOT NULL
+CREATE SCHEMA tienda;
+
+--ENUMS------------------------------------
+CREATE TYPE tienda.enum_tipo_docu AS ENUM ('CC','CE', 'NIT');
+CREATE TYPE tienda.enum_tipo_evento AS ENUM ('CREATE', 'UPDATE', 'DELETE');
+CREATE TYPE tienda.enum_score_desc AS ENUM ('LOW', 'LOW-MID', 'MID', 'MID-HIGH', 'HIGH');
+CREATE TYPE tienda.enum_tipo_pago AS ENUM ('Debito', 'Credito', 'PSE');
+
+/* TODO: Double-check FKs, PKs and fix any bugs */
+/* TODO: Double-check if References/Relations are correctly handled */
+/* TODO: Create insertions (Maybe not from scratch) */
+
+--CREATION---------------------------------
+CREATE TABLE tienda.CUSTOMER (
+	Customer_id INT NOT NULL PRIMARY KEY,
+	Customer_doctype tienda.enum_tipo_docu NOT NULL,
+	Customer_name VARCHAR(100) NOT NULL,
+	Customer_phone VARCHAR(20) UNIQUE NOT NULL,
+	Customer_email VARCHAR(100) UNIQUE NOT NULL,
+	Customer_address VARCHAR(100) NOT NULL,
+	Customer_city VARCHAR(100) NOT NULL,
+	Customer_pw VARCHAR(100) NOT NULL
 );
 
-CREATE TYPE tienda.enum_tipo_identificacion AS ENUM ('CC','CE', 'NIT');
-
-CREATE TABLE tienda.USUARIO (
-	numero_identificacion INT NOT NULL PRIMARY KEY,
-	enum_tipo_identificacion tienda.enum_tipo_identificacion,
-	proveedor boolean NOT NULL,
-	nombre VARCHAR(100) NOT NULL,
-	telefono VARCHAR(20) NOT NULL,
-	email VARCHAR(100) NOT NULL,
-	direccion VARCHAR(100) NOT NULL,
-	ciudad VARCHAR(100) NOT NULL,
-	contrasenia VARCHAR(100) NOT NULL
-);
-
-CREATE TABLE tienda.PRODUCTO (
-	id_producto INT NOT NULL PRIMARY KEY,
-	titulo_producto VARCHAR(100) UNIQUE NOT NULL,
-	categoria_producto VARCHAR(100) NOT NULL,
-	marca_producto VARCHAR(100) NOT NULL,
-	descripcion_producto VARCHAR(500) NOT NULL,
-	precio_producto int NOT NULL,
-	stock int not null
+CREATE TABLE tienda.SHOPPING_CART (
+	Cart_id INT NOT NULL PRIMARY KEY,
+	Creation_date TIMESTAMP NOT NULL,
+	Customer_id INT NOT NULL
 );
 
 CREATE TABLE tienda.ORDEN_COMPRA (
-	id_orden INT NOT NULL PRIMARY KEY,
-	direccion_envio VARCHAR(250) NOT NULL,
-	tipo_envio boolean NOT NULL,
-	valor_compra int NOT NULL,
-	numero_identificacion int NOT NULL,
-	CONSTRAINT "id_orden" FOREIGN KEY ("numero_identificacion")
-		REFERENCES tienda.usuario("numero_identificacion")
+	Order_id INT NOT NULL PRIMARY KEY,
+	Delivery_address VARCHAR(250) NOT NULL,
+	isPremiun BOOLEAN NOT NULL,
+	Valor_compra INT NOT NULL,
+	Customer_id INT NOT NULL,
+	CONSTRAINT "Customer_id" FOREIGN KEY ("Customer_id")
+		REFERENCES tienda.usuario("Cusomer_id")
 );
 
-CREATE TABLE tienda.PRODUCTOS_COMPRA (
-	id_orden INT NOT NULL,
-	id_producto INT NOT NULL,
-	-- 1 preparacion 2 enviado 3 recibido 4 cancelado
-	estado_producto INT NOT NULL,
-	CONSTRAINT "id_orden" FOREIGN KEY ("id_orden")
-		REFERENCES tienda.ORDEN_COMPRA("id_orden"),
-	CONSTRAINT "id_producto" FOREIGN KEY ("id_producto")
-		REFERENCES tienda.producto("id_producto")
+CREATE TABLE tienda.ADMINISTATOR (
+	Admin_id VARCHAR(100) NOT NULL PRIMARY KEY,
+	Admin_phone VARCHAR(20) NOT NULL,
+	Admin_email VARCHAR(100) NOT NULL,
+	Admin_pw VARCHAR(100) NOT NULL
 );
 
--- usuarios
-INSERT into tienda.usuario VALUES (500,'CC',false,'BRIAN',588485, 'brian@gmail','carrera 71', 'CHIA', 'ADMIN');
-INSERT into tienda.usuario VALUES (600,'CC',false,'Jósteinn',588485, 'bifrost@gmail','carrera 9', 'USAQUÉN', 'mjolnir333');
-INSERT into tienda.usuario VALUES (700,'CC',false,'Vasant',588485, 'vava@gmail','carrera 43', 'SUBA', 'pepita47');
-INSERT into tienda.usuario VALUES (800,'CC',false,'Ada',588485, 'lovelace@protonmail','autonorte', 'ENGATIVA', '#X@Un1c0d3@X#');
-INSERT into tienda.usuario VALUES (900,'CC',false,'Emilia',588485, 'emily@outlook','el dorado', 'FONTIBÓN', 'emi');
--- productos
-INSERT INTO tienda.producto VALUES (10, 'mouse negro genius', 'periféricos', 'genius', 'mouse chimba negro genius usado', 1000, 300);
-INSERT INTO tienda.producto VALUES (20, 'mouse rosa genius', 'periféricos', 'genius', 'mouse chimba rosa genius usado', 3000, 300);
-INSERT INTO tienda.producto VALUES (30, 'mouse azul genius', 'periféricos', 'genius', 'mouse chimba azul genius usado', 500, 300);
-INSERT INTO tienda.producto VALUES (40, 'teclado negro genius', 'periféricos', 'genius', 'teclado chimba negro genius usado', 700, 300);
-INSERT INTO tienda.producto VALUES (50, 'teclado negro logitech', 'periféricos', 'logitech', 'teclado chimba negro logitech nuevo', 1200, 300);
-INSERT INTO tienda.producto VALUES (60, 'cable negro logitech', 'periféricos', 'logitech', 'cable chimba logitech nuevo', 7000, 300);
-INSERT INTO tienda.producto VALUES (70, 'java 8 in action', 'libros', 'oreilly', 'libro streams y lambdas java 8', 85,  50);
-INSERT INTO tienda.producto VALUES (80, 'learning python', 'libros', 'oreilly', 'libro programación básica en python', 900, 50);
-INSERT INTO tienda.producto VALUES (90, 'cobol estructurado', 'libros', 'mc grawhill', 'libro sistemas administrativos y sintaxis cobol', 970, 70);
+CREATE TABLE tienda.PRODUCT_SALE (
+	Order_id INT NOT NULL,
+	Product_id INT NOT NULL,
+	--1 preparacion 2 enviado 3 recibido 4 cancelado
+	Product_state INT NOT NULL,
+	Variant_id INT NOT NULL,
+	CONSTRAINT "Order_id" FOREIGN KEY ("Order_id")
+		REFERENCES tienda.ORDEN_COMPRA("Order_id"),
+	CONSTRAINT "Product_id" FOREIGN KEY ("Product_id")
+		REFERENCES tienda.PRODUCTO("Product_id")
+);
 
--- compras + productos compra
-INSERT into tienda.orden_compra VALUES (20,'call 48 sur', FALSE, 300, 500); -- brian compra 10
-	INSERT into tienda.productos_compra VALUES (20, 10, 1);
-INSERT into tienda.orden_compra VALUES (21,'carrera 9', FALSE, 600, 600); -- josteinn compra 30 y 50
-	INSERT into tienda.productos_compra VALUES (21, 30, 3);
-	INSERT into tienda.productos_compra VALUES (21, 50, 3);
-INSERT into tienda.orden_compra VALUES (22,'call 48 sur', FALSE, 300, 700); -- vasant compra 60
-	INSERT into tienda.productos_compra VALUES (22, 60, 4);
-INSERT into tienda.orden_compra VALUES (23,'call 48 sur', FALSE, 470, 800); -- ada compra 40, 70, 80 y 90
-	INSERT into tienda.productos_compra VALUES (23, 40, 2);
-	INSERT into tienda.productos_compra VALUES (23, 70, 3);
-	INSERT into tienda.productos_compra VALUES (23, 80, 3);
-	INSERT into tienda.productos_compra VALUES (23, 90, 3);
+CREATE TABLE tienda.Payment_method (
+	Payment_method_id INT NOT NULL PRIMARY KEY,
+	Method_name tienda.enum_tipo_pago NOT NULL ,
+	--Card_num porque 'Number' es una palabra reservada
+	--Nulleable porque no se tiene q especificar el valor si es PSE
+	Card_num BIGINT,
+	Monthly_fees SMALLINT NOT NULL
+);
 
+CREATE TABLE tienda.PROVIDER (
+	/* Id porque todos los usuarios pueden crear Ids
+	que pueden ser de varios tipos */
+	Provider_id INT NOT NULL PRIMARY KEY,
+	Provider_doctype tienda.enum_tipo_docu NOT NULL,
+	Provider_name VARCHAR(100) NOT NULL,
+	Provider_phone VARCHAR(20) UNIQUE NOT NULL,
+	Provider_email VARCHAR(100) UNIQUE NOT NULL,
+	Provider_address VARCHAR(100) NOT NULL,
+	Provider_city VARCHAR(100) NOT NULL,
+	Provider_pw VARCHAR(100) NOT NULL,
+	--Debería poderse ver la reputación semanal del Proveedor
+	Provider_rep_id INT NOT NULL,
+	CONSTRAINT "Provider_rep_id" FOREIGN KEY ("Weekly_rep_id")
+		REFERENCES tienda.WEEKLY_REPUTATION("Weekly_rep_id")
+);
+
+CREATE TABLE tienda.PRODUCT (
+	Product_id INT NOT NULL PRIMARY KEY,
+	Product_name VARCHAR(100) NOT NULL,
+	Product_category VARCHAR(100) NOT NULL,
+	Product_brand VARCHAR(100) NOT NULL,
+	Product_stock INT NOT NULL,
+	Provider_id INT NOT NULL,
+);
+
+CREATE TABLE tienda.VARIANT (
+	Variant_id INT NOT NULL PRIMARY KEY,
+	Variant_name VARCHAR(100) UNIQUE NOT NULL,
+	Variant_description VARCHAR(500) UNIQUE NOT NULL,
+	Variant_price INT NOT NULL,
+	Variant_stock INT NOT NULL,
+	Product_id INT NOT NULL
+);
+
+CREATE TABLE tienda.REVIEW (
+	Review_id INT NOT NULL PRIMARY KEY,
+	Review_obtained INT NOT NULL,
+	Review_text VARCHAR(300),
+	Review_date TIMESTAMP NOT NULL,
+	Provider_id INT NOT NULL
+);
+
+CREATE TABLE tienda.VARIANT_AUDIT (
+	Variant_audit_id INT NOT NULL PRIMARY KEY,
+	Product_id INT NOT NULL,
+	Product_name VARCHAR(100) NOT NULL,
+	Product_category VARCHAR(100) NOT NULL,
+	Product_brand VARCHAR(100) NOT NULL,
+	Product_stock INT NOT NULL,
+	Provider_id NOT NULL,
+	Provider_name VARCHAR(100) NOT NULL,
+	Provider_phone VARCHAR(20) NOT NULL,
+	Provider_email VARCHAR(100) NOT NULL,
+	Provider_address VARCHAR(100) NOT NULL,
+	Provider_city VARCHAR(100) NOT NULL,
+	Variant_id INT NOT NULL,
+	Variant_name VARCHAR(100) NOT NULL,
+	Variant_description VARCHAR(500) NOT NULL,
+	Variant_price INT NOT NULL,
+	Variant_stock INT NOT NULL,
+	Event_type tienda.enum_tipo_evento NOT NULL,
+	Event_datetime TIMESTAMP NOT NULL,
+	CONSTRAINT "Variant_id" FOREIGN KEY ("Variant_id")
+		REFERENCES tienda.VARIANT("Variant_id")
+);
+
+CREATE TABLE tienda.WEEKLY_REPUTATION (
+	Weekly_rep_id INT NOT NULL,
+	--Debería estar especificado de quién es la reputación
+	Provider_id INT NOT NULL,
+	Weekly_score INT NOT NULL,
+	Score_desc tienda.enum_score_desc NOT NULL,
+	Week_init_date TIMESTAMP NOT NULL,
+	CONSTRAINT "Provider_id" FOREIGN KEY ("Provider_id")
+		REFERENCES tienda.PROVIDER("Provider_id")
+);
+
+CREATE TABLE tienda.PRODUCT_AUDIT (
+	Product_audit_id INT NOT NULL PRIMARY KEY,
+	--Pongo el ID sin FK porque causaría errores
+	Product_id INT NOT NULL,
+	Product_category VARCHAR(100) NOT NULL,
+	Product_brand VARCHAR(100) NOT NULL
+	Product_stock INT NOT NULL,
+	Provider_id INT NOT NULL,
+	Provider_name VARCHAR(100) NOT NULL,
+	Provider_phone VARCHAR(20) NOT NULL,
+	Provider_email VARCHAR(100) NOT NULL,
+	Provider_address VARCHAR(100) NOT NULL,
+	Provider_city VARCHAR(100) NOT NULL,
+	Event_type tienda.enum_score_desc NOT NULL,
+	Event_datetime TIMESTAMP NOT NULL,
+);
+
+
+-- INSERTIONS---------------------------------
+/* ADMIN -> ID(3), PHONE, EMAIL, PW */
+INSERT INTO tienda.ADMINISTRATOR VALUES (100,'CC', 'BRIAN',588485, 'brian@gmail', 'Carrera 71', 'Chia', 'ADMIN');
+/* PROVIDER -> ID, DOCTYPE, NAME, PHONE, EMAIL, ADDRESS, CITY, PW */
+INSERT INTO tienda.PROVIDER VALUES (200, 'CC', 'Ada', 588485, 'lovelace@protonmail', 'Autonorte', 'Bogotá', '#X@Un1c0d3@X#');
+/* CUSTOMER -> ID, DOCTYPE, NAME, PHONE, EMAIL, ADDRESS, CITY, PW */
+INSERT INTO tienda.CUSTOMER VALUES (300, 'CC', 'Emilia', 588485, 'emily@outlook', 'El Dorado', 'Bogotá', 'Empanadas123');
+/* PRODUCT -> ID(2), NAME, CATEGORY, BRAND, STOCK, PROV_ID */
+INSERT INTO tienda.PRODUCT VALUES (10, 'mouse genius', 'periféricos', 'genius', 'mouse chimba genius', 1000, 200); /* tiene variants */
+INSERT INTO tienda.PRODUCT VALUES (20, 'teclado logitech', 'periféricos', 'logitech', 'teclado chimba genius', 700, 200); /* tiene variants */
+/* VARIANT -> ID, NAME, DESC, PRICE, STOCK, PROD_ID */
+INSERT INTO tienda.VARIANT VALUES (101, 'negro', 'mouse genius negro', 1000, 20, 10);
+INSERT INTO tienda.VARIANT VALUES (102, 'rosa', 'mouse genius rosa', 1000, 20, 10);
+INSERT INTO tienda.VARIANT VALUES (201, 'negro', 'teclado logitech negro', 1000, 20, 20);
+INSERT INTO tienda.VARIANT VALUES (202, 'rosa', 'teclado logitech rosa', 1000, 20, 20);
+
+/* Emilia le compra 10 y 20 a Ada */
+/* ORD_ID(4), DEL_ADDRESS, ISPREMIUN, PLATA, CUST_ID */
+INSERT INTO tienda.orden_compra VALUES (1000,'El Dorado', FALSE, 300, 100);
+	/* ORD_ID, PROD_ID, PROD_STATE, VARIANT_ID */
+	INSERT INTO tienda.productos_compra VALUES (1000, 10, 1, 102);
+	INSERT INTO tienda.productos_compra VALUES (1000, 20, 2, 202);
+
+----------------------------------------------
 
 /* Vista 1 - Productos
 Seguridad. Un comprador solo deberia ver los productos y su historial */
