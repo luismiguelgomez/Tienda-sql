@@ -164,7 +164,7 @@ CREATE TABLE tienda.PRODUCT_AUDIT (
 
 -- INSERTIONS---------------------------------
 /* ADMIN -> ID(3), PHONE, EMAIL, PW */
-INSERT INTO tienda.ADMINISTRATOR VALUES (100,'CC', 'BRIAN',588485, 'brian@gmail', 'Carrera 71', 'Chia', 'ADMIN');
+INSERT INTO tienda.ADMINISTATOR VALUES (100,'CC', 'BRIAN',588485, 'brian@gmail', 'Carrera 71', 'Chia', 'ADMIN');
 /* PROVIDER -> ID, DOCTYPE, NAME, PHONE, EMAIL, ADDRESS, CITY, PW */
 INSERT INTO tienda.PROVIDER VALUES (200, 'CC', 'Ada', 588485, 'lovelace@protonmail', 'Autonorte', 'Bogotá', '#X@Un1c0d3@X#');
 /* CUSTOMER -> ID, DOCTYPE, NAME, PHONE, EMAIL, ADDRESS, CITY, PW */
