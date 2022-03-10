@@ -164,23 +164,23 @@ CREATE TABLE tienda.PRODUCT_AUDIT (
 
 -- INSERTIONS---------------------------------
 /* ADMIN -> ID(3), PHONE, EMAIL, PW */
-INSERT INTO tienda.ADMINISTATOR VALUES (100,'CC', 'BRIAN',588485, 'brian@gmail', 'Carrera 71', 'Chia', 'ADMIN');
+INSERT INTO tienda.ADMINISTATOR VALUES ('100','588485','brian@gmail','passw0rBRIAN');
 /* PROVIDER -> ID, DOCTYPE, NAME, PHONE, EMAIL, ADDRESS, CITY, PW */
 INSERT INTO tienda.PROVIDER VALUES (200, 'CC', 'Ada', 588485, 'lovelace@protonmail', 'Autonorte', 'Bogotá', '#X@Un1c0d3@X#');
 /* CUSTOMER -> ID, DOCTYPE, NAME, PHONE, EMAIL, ADDRESS, CITY, PW */
 INSERT INTO tienda.CUSTOMER VALUES (300, 'CC', 'Emilia', 588485, 'emily@outlook', 'El Dorado', 'Bogotá', 'Empanadas123');
 /* PRODUCT -> ID(2), NAME, CATEGORY, BRAND, STOCK, PROV_ID */
-INSERT INTO tienda.PRODUCT VALUES (10, 'mouse genius', 'periféricos', 'genius', 'mouse chimba genius', 1000, 200); /* tiene variants */
-INSERT INTO tienda.PRODUCT VALUES (20, 'teclado logitech', 'periféricos', 'logitech', 'teclado chimba genius', 700, 200); /* tiene variants */
+INSERT INTO tienda.PRODUCT VALUES (10, 'mouse genius', 'periféricos', 'genius', 1000, 200); /* tiene variants */
+INSERT INTO tienda.PRODUCT VALUES (20, 'teclado logitech', 'periféricos', 'logitech', 700, 200); /* tiene variants */
 /* VARIANT -> ID, NAME, DESC, PRICE, STOCK, PROD_ID */
 INSERT INTO tienda.VARIANT VALUES (101, 'negro', 'mouse genius negro', 1000, 20, 10);
 INSERT INTO tienda.VARIANT VALUES (102, 'rosa', 'mouse genius rosa', 1000, 20, 10);
-INSERT INTO tienda.VARIANT VALUES (201, 'negro', 'teclado logitech negro', 1000, 20, 20);
-INSERT INTO tienda.VARIANT VALUES (202, 'rosa', 'teclado logitech rosa', 1000, 20, 20);
+INSERT INTO tienda.VARIANT VALUES (201, 'negro nebulosa', 'teclado logitech negro', 1000, 20, 20);
+INSERT INTO tienda.VARIANT VALUES (202, 'rojo', 'teclado logitech rosa', 1000, 20, 20);
 
 /* Emilia le compra 10 y 20 a Ada */
 /* ORD_ID(4), DEL_ADDRESS, ISPREMIUN, PLATA, CUST_ID */
-INSERT INTO tienda.orden_compra VALUES (1000,'El Dorado', FALSE, 300, 100);
+INSERT INTO tienda.orden_compra VALUES (1000,'El Dorado', FALSE, 80000, 300);
 	/* ORD_ID, PROD_ID, PROD_STATE, VARIANT_ID */
 	INSERT INTO tienda.productos_compra VALUES (1000, 10, 1, 102);
 	INSERT INTO tienda.productos_compra VALUES (1000, 20, 2, 202);
