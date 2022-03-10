@@ -183,4 +183,4 @@ INSERT INTO tienda.VARIANT VALUES (202, 'rosa', 'teclado logitech rosa', 1000, 2
 INSERT INTO tienda.orden_compra VALUES (1000,'El Dorado', FALSE, 300, 100);
 	/* ORD_ID, PROD_ID, PROD_STATE, VARIANT_ID */
 	INSERT INTO tienda.productos_compra VALUES (1000, 10, 1, 102);
-	INSERT INTO tienda.productos_compra VALUES (1000, 20, 2, 202);}
+	INSERT INTO tienda.productos_compra VALUES (1000, 20, 2, 202);
