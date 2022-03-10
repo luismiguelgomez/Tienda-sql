@@ -6,8 +6,6 @@ CREATE TYPE tienda.enum_tipo_evento AS ENUM ('CREATE', 'UPDATE', 'DELETE');
 CREATE TYPE tienda.enum_score_desc AS ENUM ('LOW', 'LOW-MID', 'MID', 'MID-HIGH', 'HIGH');
 CREATE TYPE tienda.enum_tipo_pago AS ENUM ('Debito', 'Credito', 'PSE');
 
-/* TODO: FALTAN INSERTS. ES LO DE MENOS POR AHORA, PERO FALTAN*/
-
 /* Borré las views y los índices pq para este taller son un cero a la izquierda,
  pero si nos llegan a hacer falta las recuperamos de commits anteriores */
 
@@ -166,9 +164,9 @@ CREATE TABLE tienda.PRODUCT_AUDIT (
 /* ADMIN -> ID(3), PHONE, EMAIL, PW */
 INSERT INTO tienda.ADMINISTATOR VALUES ('100','588485','brian@gmail','passw0rBRIAN');
 /* PROVIDER -> ID, DOCTYPE, NAME, PHONE, EMAIL, ADDRESS, CITY, PW */
-INSERT INTO tienda.PROVIDER VALUES (200, 'CC', 'Ada', 588485, 'lovelace@protonmail', 'Autonorte', 'Bogotá', '#X@Un1c0d3@X#');
+INSERT INTO tienda.PROVIDER VALUES (200, 'CC', 'Ada', '588485', 'lovelace@protonmail', 'Autonorte', 'Bogotá', '#X@Un1c0d3@X#');
 /* CUSTOMER -> ID, DOCTYPE, NAME, PHONE, EMAIL, ADDRESS, CITY, PW */
-INSERT INTO tienda.CUSTOMER VALUES (300, 'CC', 'Emilia', 588485, 'emily@outlook', 'El Dorado', 'Bogotá', 'Empanadas123');
+INSERT INTO tienda.CUSTOMER VALUES (300, 'CC', 'Emilia', '588485', 'emily@outlook', 'El Dorado', 'Bogotá', 'Empanadas123');
 /* PRODUCT -> ID(2), NAME, CATEGORY, BRAND, STOCK, PROV_ID */
 INSERT INTO tienda.PRODUCT VALUES (10, 'mouse genius', 'periféricos', 'genius', 1000, 200); /* tiene variants */
 INSERT INTO tienda.PRODUCT VALUES (20, 'teclado logitech', 'periféricos', 'logitech', 700, 200); /* tiene variants */
