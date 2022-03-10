@@ -6,8 +6,6 @@ CREATE TYPE tienda.enum_tipo_evento AS ENUM ('CREATE', 'UPDATE', 'DELETE');
 CREATE TYPE tienda.enum_score_desc AS ENUM ('LOW', 'LOW-MID', 'MID', 'MID-HIGH', 'HIGH');
 CREATE TYPE tienda.enum_tipo_pago AS ENUM ('Debito', 'Credito', 'PSE');
 
-/* TODO: FALTAN INSERTS. ES LO DE MENOS POR AHORA, PERO FALTAN*/
-
 /* Borré las views y los índices pq para este taller son un cero a la izquierda,
  pero si nos llegan a hacer falta las recuperamos de commits anteriores */
 
@@ -31,17 +29,24 @@ CREATE TABLE tienda.SHOPPING_CART (
 		REFERENCES tienda.CUSTOMER("customer_id")
 );
 
-CREATE TABLE tienda.ORDEN_COMPRA (
+CREATE TABLE tienda.PURCHASE_ORDER (
 	Order_id INT NOT NULL PRIMARY KEY,
 	Delivery_address VARCHAR(250) NOT NULL,
 	isPremiun BOOLEAN NOT NULL,
 	Valor_compra INT NOT NULL,
-	Customer_id INT NOT NULL,
-	CONSTRAINT "Customer_id" FOREIGN KEY ("customer_id")
-		REFERENCES tienda.CUSTOMER("customer_id")
+	/* Card_num porque 'Number' es una palabra reservada
+	Nulleable porque no se tiene q especificar el valor si es PSE */
+	Card_num BIGINT,
+	Monthly_fees INT,
+	/* Me acabo de percatar de que Las PURCHASE_ORDERS se generan a partir
+	de un SHOPPING_CART. Estoy que me pego un tiro damas y caballeros
+	CUSTOMER -> SHOPPING_CART -> CART_PRODUCTS -> PURCHASE_ORDER -> PAYMENT_METHOD */
+	Cart_id INT NOT NULL,
+	CONSTRAINT "Cart_id" FOREIGN KEY ("cart_id")
+		REFERENCES tienda.SHOPPING_CART("cart_id")
 );
 
-CREATE TABLE tienda.ADMINISTATOR (
+CREATE TABLE tienda.ADMINISTRATOR (
 	Admin_id VARCHAR(100) NOT NULL PRIMARY KEY,
 	Admin_phone VARCHAR(20) NOT NULL,
 	Admin_email VARCHAR(100) NOT NULL,
@@ -77,36 +82,36 @@ CREATE TABLE tienda.PRODUCT (
 	Product_name VARCHAR(100) NOT NULL,
 	Product_category VARCHAR(100) NOT NULL,
 	Product_brand VARCHAR(100) NOT NULL,
-	Product_stock INT NOT NULL,
 	Provider_id INT NOT NULL,
 	CONSTRAINT "Provider_id" FOREIGN KEY ("provider_id")
 		REFERENCES tienda.PROVIDER("provider_id")
 );
 
-CREATE TABLE tienda.PRODUCT_SALE (
-	Order_id INT NOT NULL,
+CREATE TABLE tienda.CART_PRODUCTS (
+	/* Me acabo de percatar de que Las PURCHASE_ORDERS se generan a partir
+	de un SHOPPING_CART. Estoy que me pego un tiro damas y caballeros
+	CUSTOMER -> SHOPPING_CART -> CART_PRODUCTS -> PURCHASE_ORDER -> PAYMENT_METHOD */
+	Cart_id INT NOT NULL,
 	Product_id INT NOT NULL,
 	--1 preparacion 2 enviado 3 recibido 4 cancelado
 	Product_state INT NOT NULL,
 	Variant_id INT NOT NULL,
-	CONSTRAINT "Order_id" FOREIGN KEY ("order_id")
-		REFERENCES tienda.ORDEN_COMPRA("order_id"),
+	CONSTRAINT "Cart_id" FOREIGN KEY ("cart_id")
+		REFERENCES tienda.SHOPPING_CART("cart_id"),
 	CONSTRAINT "Product_id" FOREIGN KEY ("product_id")
 		REFERENCES tienda.PRODUCT("product_id")
 );
 
-CREATE TABLE tienda.Payment_method (
+CREATE TABLE tienda.PAYMENT_METHOD (
+	/* Aquí no va nada de eso de Card_number o Monthly fees porque eso se especifica al momento
+	 de generar la órden de compra */
 	Payment_method_id INT NOT NULL PRIMARY KEY,
-	Method_name tienda.enum_tipo_pago NOT NULL ,
-	--Card_num porque 'Number' es una palabra reservada
-	--Nulleable porque no se tiene q especificar el valor si es PSE
-	Card_num BIGINT,
-	Monthly_fees SMALLINT NOT NULL
+	Method_name tienda.enum_tipo_pago NOT NULL
 );
 
 CREATE TABLE tienda.VARIANT (
 	Variant_id INT NOT NULL PRIMARY KEY,
-	Variant_name VARCHAR(100) UNIQUE NOT NULL,
+	Variant_name VARCHAR(100) NOT NULL,
 	Variant_description VARCHAR(500) UNIQUE NOT NULL,
 	Variant_price INT NOT NULL,
 	Variant_stock INT NOT NULL,
@@ -132,8 +137,7 @@ CREATE TABLE tienda.VARIANT_AUDIT (
 	Provider_name VARCHAR(100) NOT NULL,
 	Provider_phone VARCHAR(20) NOT NULL,
 	Provider_email VARCHAR(100) NOT NULL,
-	Provider_address VARCHAR(100) NOT NULL,
-	Provider_city VARCHAR(100) NOT NULL,
+	Provider_address VARCHAR(100) NOT NULL, Provider_city VARCHAR(100) NOT NULL,
 	Variant_id INT NOT NULL,
 	Variant_name VARCHAR(100) NOT NULL,
 	Variant_description VARCHAR(500) NOT NULL,
@@ -163,24 +167,34 @@ CREATE TABLE tienda.PRODUCT_AUDIT (
 );
 
 -- INSERTIONS---------------------------------
+/*
+	Brian: ADMIN
+	Ada: PROVIDER
+	Emilia: CUSTOMER
+
+	Emilia (CUSTOMER) le compra a Ada (PROVIDER) un mouse genius rosa (PRODUCT 10 VARIANT 102)
+		Para hacer esta compra, Emilia tiene un carrito (SHOPPING_CART) con productos (CART
+		PRODUCTS) a partir del cual crea una orden (PURCHASE_ORDER)
+
+	IGNORAMOS LOS AUDITS POR AHORA, NO EXISTEN, SON UNA TEORÍA DE CONSPIRACIÓN
+*/
+
 /* ADMIN -> ID(3), PHONE, EMAIL, PW */
-INSERT INTO tienda.ADMINISTATOR VALUES ('100','588485','brian@gmail','passw0rBRIAN');
-/* PROVIDER -> ID, DOCTYPE, NAME, PHONE, EMAIL, ADDRESS, CITY, PW */
+INSERT INTO tienda.ADMINISTRATOR VALUES (100, 588485, 'brian@gmail', 'ADMIN');
+/* PROVIDER -> ID(3), DOCTYPE, NAME, PHONE, EMAIL, ADDRESS, CITY, PW */
 INSERT INTO tienda.PROVIDER VALUES (200, 'CC', 'Ada', 588485, 'lovelace@protonmail', 'Autonorte', 'Bogotá', '#X@Un1c0d3@X#');
-/* CUSTOMER -> ID, DOCTYPE, NAME, PHONE, EMAIL, ADDRESS, CITY, PW */
+/* CUSTOMER -> ID(3), DOCTYPE, NAME, PHONE, EMAIL, ADDRESS, CITY, PW */
 INSERT INTO tienda.CUSTOMER VALUES (300, 'CC', 'Emilia', 588485, 'emily@outlook', 'El Dorado', 'Bogotá', 'Empanadas123');
-/* PRODUCT -> ID(2), NAME, CATEGORY, BRAND, STOCK, PROV_ID */
-INSERT INTO tienda.PRODUCT VALUES (10, 'mouse genius', 'periféricos', 'genius', 1000, 200); /* tiene variants */
-INSERT INTO tienda.PRODUCT VALUES (20, 'teclado logitech', 'periféricos', 'logitech', 700, 200); /* tiene variants */
-/* VARIANT -> ID, NAME, DESC, PRICE, STOCK, PROD_ID */
-INSERT INTO tienda.VARIANT VALUES (101, 'negro', 'mouse genius negro', 1000, 20, 10);
-INSERT INTO tienda.VARIANT VALUES (102, 'rosa', 'mouse genius rosa', 1000, 20, 10);
-INSERT INTO tienda.VARIANT VALUES (201, 'negro nebulosa', 'teclado logitech negro', 1000, 20, 20);
-INSERT INTO tienda.VARIANT VALUES (202, 'rojo', 'teclado logitech rosa', 1000, 20, 20);
+/* PRODUCT -> ID(2), NAME, BRAND, CATEGORY, STOCK, PROV_ID */
+INSERT INTO tienda.PRODUCT VALUES (10, 'mouse genius', 'periféricos', 'genius', 200);
+INSERT INTO tienda.PRODUCT VALUES (20, 'teclado logitech', 'periféricos', 'logitech', 200);
+/* VARIANT -> ID(P#), NAME, DESC, PRICE, STOCK, PROD_ID */
+INSERT INTO tienda.VARIANT VALUES (101, 'negro', 'mouse genius negro', 1000, 2, 10);
+INSERT INTO tienda.VARIANT VALUES (102, 'rosa', 'mouse genius rosa', 1000, 2, 10);
+INSERT INTO tienda.VARIANT VALUES (201, 'negro', 'teclado logitech negro', 1000, 2, 20);
+INSERT INTO tienda.VARIANT VALUES (202, 'rosa', 'teclado logitech rosa', 1000, 2, 20);
 
 /* Emilia le compra 10 y 20 a Ada */
-/* ORD_ID(4), DEL_ADDRESS, ISPREMIUN, PLATA, CUST_ID */
-INSERT INTO tienda.orden_compra VALUES (1000,'El Dorado', FALSE, 80000, 300);
-	/* ORD_ID, PROD_ID, PROD_STATE, VARIANT_ID */
-	INSERT INTO tienda.productos_compra VALUES (1000, 10, 1, 102);
-	INSERT INTO tienda.productos_compra VALUES (1000, 20, 2, 202);
+INSERT INTO tienda.SHOPPING_CART VALUES (1, '2021-03-08', 300);
+INSERT INTO tienda.CART_PRODUCTS VALUES (1, 10, 1, 102);
+INSERT INTO tienda.PURCHASE_ORDER VALUES (1, 'El Dorado', FALSE, 1000, 745996, 2, 1);
