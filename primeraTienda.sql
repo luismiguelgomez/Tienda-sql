@@ -47,7 +47,7 @@ CREATE TABLE tienda.PURCHASE_ORDER (
 );
 
 CREATE TABLE tienda.ADMINISTRATOR (
-	Admin_id VARCHAR(100) NOT NULL PRIMARY KEY,
+	Admin_id INT NOT NULL PRIMARY KEY,
 	Admin_phone VARCHAR(20) NOT NULL,
 	Admin_email VARCHAR(100) NOT NULL,
 	Admin_pw VARCHAR(100) NOT NULL
@@ -180,11 +180,11 @@ CREATE TABLE tienda.PRODUCT_AUDIT (
 */
 
 /* ADMIN -> ID(3), PHONE, EMAIL, PW */
-INSERT INTO tienda.ADMINISTRATOR VALUES (100, 588485, 'brian@gmail', 'ADMIN');
+INSERT INTO tienda.ADMINISTRATOR VALUES (100, '588485', 'brian@gmail', 'ADMIN');
 /* PROVIDER -> ID(3), DOCTYPE, NAME, PHONE, EMAIL, ADDRESS, CITY, PW */
-INSERT INTO tienda.PROVIDER VALUES (200, 'CC', 'Ada', 588485, 'lovelace@protonmail', 'Autonorte', 'Bogotá', '#X@Un1c0d3@X#');
+INSERT INTO tienda.PROVIDER VALUES (200, 'CC', 'Ada', '588485', 'lovelace@protonmail', 'Autonorte', 'Bogotá', '#X@Un1c0d3@X#');
 /* CUSTOMER -> ID(3), DOCTYPE, NAME, PHONE, EMAIL, ADDRESS, CITY, PW */
-INSERT INTO tienda.CUSTOMER VALUES (300, 'CC', 'Emilia', 588485, 'emily@outlook', 'El Dorado', 'Bogotá', 'Empanadas123');
+INSERT INTO tienda.CUSTOMER VALUES (300, 'CC', 'Emilia', '588485', 'emily@outlook', 'El Dorado', 'Bogotá', 'Empanadas123');
 /* PRODUCT -> ID(2), NAME, BRAND, CATEGORY, STOCK, PROV_ID */
 INSERT INTO tienda.PRODUCT VALUES (10, 'mouse genius', 'periféricos', 'genius', 200);
 INSERT INTO tienda.PRODUCT VALUES (20, 'teclado logitech', 'periféricos', 'logitech', 200);
