@@ -127,7 +127,7 @@ CREATE TABLE tienda.REVIEW (
 );
 
 CREATE TABLE tienda.VARIANT_AUDIT (
-	Variant_audit_id INT NOT NULL PRIMARY KEY,
+	Variant_audit_id SERIAL NOT NULL PRIMARY KEY,
 	Product_id INT NOT NULL,
 	Product_name VARCHAR(100) NOT NULL,
 	Product_category VARCHAR(100) NOT NULL,
@@ -150,7 +150,7 @@ CREATE TABLE tienda.VARIANT_AUDIT (
 );
 
 CREATE TABLE tienda.PRODUCT_AUDIT (
-	Product_audit_id INT NOT NULL PRIMARY KEY,
+	Product_audit_id SERIAL NOT NULL PRIMARY KEY,
 	--Pongo el ID sin FK porque causaría errores
 	Product_id INT NOT NULL,
 	Product_category VARCHAR(100) NOT NULL,
@@ -175,8 +175,6 @@ CREATE TABLE tienda.PRODUCT_AUDIT (
 	Emilia (CUSTOMER) le compra a Ada (PROVIDER) un mouse genius rosa (PRODUCT 10 VARIANT 102)
 		Para hacer esta compra, Emilia tiene un carrito (SHOPPING_CART) con productos (CART
 		PRODUCTS) a partir del cual crea una orden (PURCHASE_ORDER)
-
-	IGNORAMOS LOS AUDITS POR AHORA, NO EXISTEN, SON UNA TEORÍA DE CONSPIRACIÓN
 */
 
 /* ADMIN -> ID(3), PHONE, EMAIL, PW */
