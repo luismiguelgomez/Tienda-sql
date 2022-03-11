@@ -130,14 +130,8 @@ CREATE TABLE tienda.VARIANT_AUDIT (
 	Variant_audit_id SERIAL NOT NULL PRIMARY KEY,
 	Product_id INT NOT NULL,
 	Product_name VARCHAR(100) NOT NULL,
-	Product_category VARCHAR(100) NOT NULL,
-	Product_brand VARCHAR(100) NOT NULL,
-	Product_stock INT NOT NULL,
 	Provider_id INT NOT NULL,
 	Provider_name VARCHAR(100) NOT NULL,
-	Provider_phone VARCHAR(20) NOT NULL,
-	Provider_email VARCHAR(100) NOT NULL,
-	Provider_address VARCHAR(100) NOT NULL, Provider_city VARCHAR(100) NOT NULL,
 	Variant_id INT NOT NULL,
 	Variant_name VARCHAR(100) NOT NULL,
 	Variant_description VARCHAR(500) NOT NULL,
@@ -145,23 +139,18 @@ CREATE TABLE tienda.VARIANT_AUDIT (
 	Variant_stock INT NOT NULL,
 	Event_type tienda.enum_tipo_evento NOT NULL,
 	Event_datetime TIMESTAMP NOT NULL,
-	CONSTRAINT "Variant_id" FOREIGN KEY ("variant_id")
-		REFERENCES tienda.VARIANT("variant_id")
 );
 
 CREATE TABLE tienda.PRODUCT_AUDIT (
 	Product_audit_id SERIAL NOT NULL PRIMARY KEY,
 	--Pongo el ID sin FK porque causaría errores
 	Product_id INT NOT NULL,
+	Product_name VARCHAR(100) NOT NULL,
 	Product_category VARCHAR(100) NOT NULL,
 	Product_brand VARCHAR(100) NOT NULL,
 	Product_stock INT NOT NULL,
 	Provider_id INT NOT NULL,
 	Provider_name VARCHAR(100) NOT NULL,
-	Provider_phone VARCHAR(20) NOT NULL,
-	Provider_email VARCHAR(100) NOT NULL,
-	Provider_address VARCHAR(100) NOT NULL,
-	Provider_city VARCHAR(100) NOT NULL,
 	Event_type tienda.enum_score_desc NOT NULL,
 	Event_datetime TIMESTAMP NOT NULL
 );
