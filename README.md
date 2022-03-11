@@ -1,4 +1,10 @@
-### Tienda-sql
+# Tienda-sql
+
+### .sql Files
+
+```trigger_2-1.sql``` creates a FUNCTION that, after an INSERT in PURCHASE_ORDERS, checks if the INSERT introduces a duplicate order and raises and exception if it is. ```trigger_2-2.sql``` creates the TRIGGER that executes that function after an INSERT.
+
+### Info
 
 This database supports a typical shopping cart to buy products from different categories.
 
@@ -16,7 +22,7 @@ Users can sign in using their email and password as soon as their account is cre
 
 Users will be able to find their ongoing orders, and the status for each individual product included after purchase, considering that an order is related to only one user.
 
-Participants:
+### Participants
 
 Luis Gómez
 
