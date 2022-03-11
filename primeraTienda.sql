@@ -138,7 +138,7 @@ CREATE TABLE tienda.VARIANT_AUDIT (
 	Variant_price INT NOT NULL,
 	Variant_stock INT NOT NULL,
 	Event_type tienda.enum_tipo_evento NOT NULL,
-	Event_datetime TIMESTAMP NOT NULL,
+	Event_datetime TIMESTAMP NOT NULL
 );
 
 CREATE TABLE tienda.PRODUCT_AUDIT (
