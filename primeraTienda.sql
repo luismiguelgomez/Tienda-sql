@@ -5,7 +5,6 @@ CREATE TYPE tienda.enum_tipo_docu AS ENUM ('CC','CE', 'NIT');
 CREATE TYPE tienda.enum_tipo_evento AS ENUM ('CREATE', 'UPDATE', 'DELETE');
 CREATE TYPE tienda.enum_score_desc AS ENUM ('LOW', 'LOW-MID', 'MID', 'MID-HIGH', 'HIGH');
 CREATE TYPE tienda.enum_tipo_pago AS ENUM ('Debito', 'Credito', 'PSE');
-
 /* Borré las views y los índices pq para este taller son un cero a la izquierda,
  pero si nos llegan a hacer falta las recuperamos de commits anteriores */
 
@@ -82,6 +81,7 @@ CREATE TABLE tienda.PRODUCT (
 	Product_name VARCHAR(100) NOT NULL,
 	Product_category VARCHAR(100) NOT NULL,
 	Product_brand VARCHAR(100) NOT NULL,
+	Product_stock INT NOT NULL,
 	Provider_id INT NOT NULL,
 	CONSTRAINT "Provider_id" FOREIGN KEY ("provider_id")
 		REFERENCES tienda.PROVIDER("provider_id")
@@ -129,9 +129,6 @@ CREATE TABLE tienda.REVIEW (
 CREATE TABLE tienda.VARIANT_AUDIT (
 	Variant_audit_id SERIAL NOT NULL PRIMARY KEY,
 	Product_id INT NOT NULL,
-	Product_name VARCHAR(100) NOT NULL,
-	Provider_id INT NOT NULL,
-	Provider_name VARCHAR(100) NOT NULL,
 	Variant_id INT NOT NULL,
 	Variant_name VARCHAR(100) NOT NULL,
 	Variant_description VARCHAR(500) NOT NULL,
@@ -150,7 +147,6 @@ CREATE TABLE tienda.PRODUCT_AUDIT (
 	Product_brand VARCHAR(100) NOT NULL,
 	Product_stock INT NOT NULL,
 	Provider_id INT NOT NULL,
-	Provider_name VARCHAR(100) NOT NULL,
 	Event_type tienda.enum_score_desc NOT NULL,
 	Event_datetime TIMESTAMP NOT NULL
 );
@@ -173,8 +169,8 @@ INSERT INTO tienda.PROVIDER VALUES (200, 'CC', 'Ada', '588485', 'lovelace@proton
 /* CUSTOMER -> ID(3), DOCTYPE, NAME, PHONE, EMAIL, ADDRESS, CITY, PW */
 INSERT INTO tienda.CUSTOMER VALUES (300, 'CC', 'Emilia', '588485', 'emily@outlook', 'El Dorado', 'Bogotá', 'Empanadas123');
 /* PRODUCT -> ID(2), NAME, BRAND, CATEGORY, STOCK, PROV_ID */
-INSERT INTO tienda.PRODUCT VALUES (10, 'mouse genius', 'periféricos', 'genius', 200);
-INSERT INTO tienda.PRODUCT VALUES (20, 'teclado logitech', 'periféricos', 'logitech', 200);
+INSERT INTO tienda.PRODUCT VALUES (10, 'mouse genius', 'periféricos', 'genius', 5, 200);
+INSERT INTO tienda.PRODUCT VALUES (20, 'teclado logitech', 'periféricos', 'logitech', 5, 200);
 /* VARIANT -> ID(P#), NAME, DESC, PRICE, STOCK, PROD_ID */
 INSERT INTO tienda.VARIANT VALUES (101, 'negro', 'mouse genius negro', 1000, 2, 10);
 INSERT INTO tienda.VARIANT VALUES (102, 'rosa', 'mouse genius rosa', 1000, 2, 10);
