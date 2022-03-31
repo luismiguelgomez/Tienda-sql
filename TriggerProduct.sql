@@ -4,19 +4,19 @@ BEGIN
 		INSERT INTO tienda.product_audit (product_id, product_name, product_category, product_brand, 
 		product_stock, provider_id, event_type, event_datetime)
 		VALUES(new.product_id, new.product_name, new.product_category, new.product_brand, new.product_stock, 
-			  new.provider_id, 1, current_date);
+			  new.provider_id, 'INSERT', current_date);
 		RETURN NEW;
 	ELSEIF (TG_OP = 'UPDATE') THEN
 		INSERT INTO tienda.product_audit (product_id, product_name, product_category, product_brand, 
 		product_stock, provider_id, event_type, event_datetime)
 		VALUES(old.product_id, old.product_name, old.product_category, old.product_brand, old.product_stock, 
-			  old.provider_id, 2, current_date);
+			  old.provider_id, 'UPDATE', current_date);
 		RETURN NEW;
 	ELSEIF (TG_OP = 'DELETE') THEN
 		INSERT INTO tienda.product_audit (product_id, product_name, product_category, product_brand, 
 		product_stock, provider_id, event_type, event_datetime)
 		VALUES(old.product_id, old.product_name, old.product_category, old.product_brand, old.product_stock, 
-			  old.provider_id, 3, current_date);
+			  old.provider_id, 'DELETE', current_date);
 		RETURN OLD;
 	END IF;
 	RETURN NULL;

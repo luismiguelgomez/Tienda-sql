@@ -2,7 +2,6 @@ CREATE SCHEMA tienda;
 
 --ENUMS------------------------------------
 CREATE TYPE tienda.enum_tipo_docu AS ENUM ('CC','CE', 'NIT');
-CREATE TYPE tienda.enum_tipo_evento AS ENUM ('CREATE', 'UPDATE', 'DELETE');
 CREATE TYPE tienda.enum_score_desc AS ENUM ('LOW', 'LOW-MID', 'MID', 'MID-HIGH', 'HIGH');
 CREATE TYPE tienda.enum_tipo_pago AS ENUM ('Debito', 'Credito', 'PSE');
 /* Borré las views y los índices pq para este taller son un cero a la izquierda,
@@ -134,7 +133,7 @@ CREATE TABLE tienda.VARIANT_AUDIT (
 	Variant_description VARCHAR(500) NOT NULL,
 	Variant_price INT NOT NULL,
 	Variant_stock INT NOT NULL,
-	Event_type tienda.enum_tipo_evento NOT NULL,
+	Event_type VARCHAR(20) NOT NULL,
 	Event_datetime TIMESTAMP NOT NULL
 );
 
@@ -147,7 +146,7 @@ CREATE TABLE tienda.PRODUCT_AUDIT (
 	Product_brand VARCHAR(100) NOT NULL,
 	Product_stock INT NOT NULL,
 	Provider_id INT NOT NULL,
-	Event_type tienda.enum_score_desc NOT NULL,
+	Event_type VARCHAR(20) NOT NULL,
 	Event_datetime TIMESTAMP NOT NULL
 );
 
